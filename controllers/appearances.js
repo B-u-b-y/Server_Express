@@ -5,7 +5,6 @@ const Appearances = require('../models/appearances');
 const appearances = {
 
     async searchPlayerGames(player_id){
-        console.log('Searching for player:', player_id);
         try{
             const query = {player_id: player_id};
             return await Appearances.distinct('game_id').find(query, undefined, undefined).limit(10);
