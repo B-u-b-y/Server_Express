@@ -32,6 +32,20 @@ router.get('/competition/:competition_id', async (req, res) => {
         }
 });
 
+router.get('/standings/:competition_id', async (req, res) => {
+    const {competition_id} = req.params;
+    try{
+        const games = await gamesController.searchCompetitionStandings(competition_id);
+        console.log(games);
+        if(games){
+            res.json(games);
+        }else{
+            res.status(404).json({error: 'Games not found'});
+        }
+    }catch (error){
+        res.status(500).json({error: 'An error occurred while fetching games data'});
+    }
+});
 
 
 
