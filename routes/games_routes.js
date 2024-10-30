@@ -36,7 +36,6 @@ router.get('/standings/:competition_id', async (req, res) => {
     const {competition_id} = req.params;
     try{
         const games = await gamesController.searchCompetitionStandings(competition_id);
-        console.log(games);
         if(games){
             res.json(games);
         }else{

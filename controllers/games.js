@@ -56,13 +56,19 @@ const games = {
                     }
                 },
                 {
-                    // Add a field to extract the numeric part of the round for sorting
+                    // Use $convert with onError to handle non-numeric rounds
                     $addFields: {
-                        roundNumber: { $toInt: { $arrayElemAt: [{ $split: ["$_id", "."] }, 0] } }
+                        roundNumber: {
+                            $convert: {
+                                input: { $arrayElemAt: [{ $split: ["$_id", "."] }, 0] },
+                                to: "int",
+                                onError: null // Set to null if conversion fails
+                            }
+                        }
                     }
                 },
                 {
-                    // Sort by the extracted round number
+                    // Sort by roundNumber, handling null values separately
                     $sort: { roundNumber: 1 }
                 },
                 {
