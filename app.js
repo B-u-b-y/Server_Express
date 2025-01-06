@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const cors = require('cors'); // Add this line for CORS support
+const cors = require('cors');
 
 // Import routes
 const appearances_Router = require('./routes/appearances_routes');
@@ -11,7 +11,10 @@ const club_games_Router = require('./routes/club_games_routes');
 const game_events_Router = require('./routes/game_events_routes');
 const game_lineups_Router = require('./routes/game_lineups_routes');
 const games_Router = require('./routes/games_routes');
-const player_Router = require('./routes/player_valuations_routes');
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swaggerConf');
+
 
 const db = require('./db/db')
 
@@ -34,7 +37,8 @@ app.use('/api/club_games', club_games_Router);
 app.use('/api/game_events', game_events_Router);
 app.use('/api/game_lineups', game_lineups_Router);
 app.use('/api/games', games_Router);
-app.use('/api/players', player_Router); // All player-related requests
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 db(); // Ensure DB is connected
 

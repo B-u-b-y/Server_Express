@@ -3,6 +3,89 @@ const router = express.Router();
 const appearanceController = require('../controllers/appearances');
 const { searchAppearancesGame } = require("../controllers/games"); // Ensure axios is imported
 
+/**
+ * @swagger
+ * /api/appearances/games/{player_id}:
+ *  get:
+ *    summary: Get game data for a player's appearances
+ *    tags:
+ *      - Appearances
+ *    description: Fetches game data for a player's appearances based on player_id
+ *    parameters:
+ *      - in: path
+ *        name: player_id
+ *        required: true
+ *        description: ID of the player for whom to fetch appearance data
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: Successfully fetched the game data for the player's appearances
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                type: object
+ *                properties:
+ *                  yellow_cards:
+ *                    type: integer
+ *                    example: 0
+ *                  red_cards:
+ *                    type: integer
+ *                    example: 0
+ *                  goals:
+ *                    type: integer
+ *                    example: 1
+ *                  assists:
+ *                    type: integer
+ *                    example: 0
+ *                  minutes_played:
+ *                    type: integer
+ *                    example: 90
+ *                  competition_id:
+ *                    type: string
+ *                    example: "GB1"
+ *                  season:
+ *                    type: integer
+ *                    example: 2013
+ *                  date:
+ *                    type: string
+ *                    example: "2013-08-17"
+ *                  home_club_name:
+ *                    type: string
+ *                    example: "West Ham United Football Club"
+ *                  away_club_name:
+ *                    type: string
+ *                    example: "Cardiff City"
+ *                  aggregate:
+ *                    type: string
+ *                    example: "2:0"
+ *                  competition_type:
+ *                    type: string
+ *                    example: "domestic_league"
+ *      404:
+ *        description: No appearances found for this player
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                error:
+ *                  type: string
+ *                  example: "No appearances found for this player."
+ *      500:
+ *        description: Internal server error occurred while fetching player data
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                error:
+ *                  type: string
+ *                  example: "An error occurred while fetching player data"
+ */
+
 router.get('/appearances/games/:player_id', async (req, res) => {
     const { player_id } = req.params;
 

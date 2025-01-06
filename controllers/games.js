@@ -27,56 +27,54 @@ const games = {
     async searchCompetitionStandings(competition_id) {
         try {
             const matchConditions = { competition_id, season: 2023 };
-
+            console.log('matchConditions:', matchConditions);
             return await Games.aggregate([
                 { $match: matchConditions },
                 {
                     $project: {
                         _id: 0,
                         round: 1,
-                        teams: [
-                            {
-                                name: "$home_club_name",
-                                position: "$home_club_position",
-                                side: "home"
-                            },
-                            {
-                                name: "$away_club_name",
-                                position: "$away_club_position",
-                                side: "away"
-                            }
-                        ]
+                        home_club_name: 1,
+                        away_club_name: 1,
+                        home_club_position: 1,
+                        away_club_position: 1
                     }
                 },
-                { $unwind: "$teams" },
                 {
                     $group: {
                         _id: "$round",
-                        teams: { $addToSet: "$teams" }
-                    }
-                },
-                {
-                    // Use $convert with onError to handle non-numeric rounds
-                    $addFields: {
-                        roundNumber: {
-                            $convert: {
-                                input: { $arrayElemAt: [{ $split: ["$_id", "."] }, 0] },
-                                to: "int",
-                                onError: null // Set to null if conversion fails
+                        teams: {
+                            $addToSet: {
+                                name: { $cond: { if: { $lt: ["$home_club_position", "$away_club_position"] }, then: "$home_club_name", else: "$away_club_name" } },
+                                position: { $cond: { if: { $lt: ["$home_club_position", "$away_club_position"] }, then: "$home_club_position", else: "$away_club_position" } }
                             }
                         }
                     }
                 },
                 {
-                    // Sort by roundNumber, handling null values separately
+                    $addFields: {
+                        roundNumber: {
+                            $convert: {
+                                input: { $arrayElemAt: [{ $split: ["$_id", "."] }, 0] },
+                                to: "int",
+                                onError: null
+                            }
+                        }
+                    }
+                },
+                {
                     $sort: { roundNumber: 1 }
                 },
                 {
-                    // Optional: Remove the roundNumber field from the final output
                     $project: {
                         _id: 0,
                         round: "$_id",
-                        teams: { $sortArray: { input: "$teams", sortBy: { position: 1 } } }
+                        teams: {
+                            $sortArray: {
+                                input: "$teams",
+                                sortBy: { position: 1 }
+                            }
+                        }
                     }
                 }
             ]);
@@ -85,6 +83,7 @@ const games = {
             return null;
         }
     }
+
 };
 
 module.exports = games;
